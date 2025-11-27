@@ -1,0 +1,39 @@
+#!/bin/sh
+exec tail -n +3 $0
+
+# This file provides custom menu entries for the Matrix GRUB Theme.
+
+# ==========================================
+# Kali Linux - Red Pill (Icon: os_kali.png)
+# ==========================================
+menuentry "Kali Linux" --class os_kali {
+    load_video
+    set gfxpayload=keep
+    insmod gzio
+    insmod part_gpt
+    insmod ext2
+    
+    # Find root partition by UUID (REPLACE THIS UUID)
+    search --no-floppy --fs-uuid --set=root <YOUR_KALI_ROOT_PARTITION_UUID>
+    
+    echo    'Loading Linux kernel...' 
+    linux   /boot/vmlinuz-6.16.8+kali-amd64 root=UUID=<YOUR_KALI_ROOT_PARTITION_UUID> rw quiet
+    
+    echo    'Loading initial ramdisk...' 
+    initrd  /boot/initrd.img-6.16.8+kali-amd64
+}
+
+# ==========================================
+# Windows - Blue Pill (Icon: os_windows.png)
+# ==========================================
+menuentry "Windows" --class os_windows {
+    insmod part_gpt
+    insmod fat
+    insmod chain
+    
+    # Find Windows EFI partition by UUID (REPLACE THIS UUID)
+    search --no-floppy --fs-uuid --set=root <YOUR_WINDOWS_EFI_PARTITION_UUID>
+    
+    echo    'Chainloading Windows Boot Manager...' 
+    chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+}
